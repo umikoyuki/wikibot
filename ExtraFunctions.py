@@ -3,6 +3,10 @@ import json
 import pandas as pd
 import glob
 from jsoncomment import JsonComment
+import numpy
+
+from Paths import*
+
 
 def flatten_json(y):
     out = {}
@@ -78,3 +82,94 @@ def unique_from_column_df(df,column):
         if item not in unique_columnlist:
             unique_columnlist.append(item)
     return unique_columnlist
+
+def table_index_list(table_path):
+    df = pd.read_parquet(table_path)
+    index_list=df.index.values.tolist()
+    return index_list
+
+def getmechmod (Mech_def_path,mods_df):
+    modpath=Mech_def_path.replace("\\","/")
+    modpath=modpath.removeprefix(rt_path)
+    last_delimiter_index = modpath.rfind("/")
+    if last_delimiter_index != -1:
+        modpath=modpath[:last_delimiter_index]
+    else:
+        modpath=modpath
+    modpath=modpath[:-5]
+    try:
+        modname=mods_df.loc[modpath]["Name"]
+    except:
+        print("getmechmod"+modpath)
+        modname="DUMMY"
+    return modname
+
+def listtosting(divlist):
+    string=""
+    for item in divlist:
+        string=string+item
+    return string
+
+#get list of component catagories from comp table
+def getcomp_categories(component_id,components_df):
+    Catagories=[]
+    num=0
+    while "catagory"+ str(num) in components_df:
+        try:
+            Catagories.append(components_df.loc[component_id]["catagory"+str(num)])
+        except KeyError as e:
+            print ("getcomp_categories",e,component_id,num) 
+        num=num+1
+    return Catagories
+
+
+def get_factionlist(mechtags, factions_df):
+    all_factions = factions_df.index.tolist()
+    Faction_name_list=[]
+    for tag in mechtags:
+        tag=str(tag)
+        lowertag=tag.lower()
+        if lowertag in all_factions:
+            try:
+                faction_name = factions_df.loc[lowertag]["name"]
+                faction_link = f"[[{lowertag}|{faction_name}]]<br>"
+                Faction_name_list.append(faction_link)
+            except:
+                print(lowertag)
+    Factions_list=listtosting(Faction_name_list)
+    return Factions_list
+
+def cat_sorter_search(Comp_id,components_df,color_keys,color_df):
+    cat_num=0
+    sorters=str(999)
+    while "catagory"+str(cat_num) in components_df:
+        try:
+            categorycolumn="catagory"+str(cat_num)
+            cat=components_df.loc[Comp_id][categorycolumn]
+            if cat in color_keys:
+                sorter=color_df.loc[cat]["Sorter"]
+                if numpy.isnan(sorter):
+                    pass
+                else:       
+                    sorters=str(int(sorter))
+        except KeyError:
+            pass
+        cat_num= cat_num +1 
+    return sorters
+
+
+def cat_color_search(Comp_id,color_type,components_df,color_keys,color_df):
+    if color_type == 'Color':
+        color="#464c54"
+    else:
+        color="#ffffff"
+    cat_num=0
+    while "catagory"+str(cat_num) in components_df:
+        categorycolumn="catagory"+str(cat_num)
+        cat=components_df.loc[Comp_id][categorycolumn]
+        if cat in color_keys:
+            if color_df.loc[cat][color_type] is not None:
+                color=color_df.loc[cat][color_type]
+        cat_num= cat_num +1
+    return color
+

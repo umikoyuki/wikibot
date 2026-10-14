@@ -16,6 +16,9 @@ mech_def_table="Umiscripts/Json_Tables/mech_def_table.parquet"
 mechstuff_table="Umiscripts/Json_Tables/mechstuff_table.parquet"
 components_table="Umiscripts/Json_Tables/componets_table.parquet"
 factions_table="Umiscripts/Json_Tables/factions_table.parquet"
+mod_info_table="Umiscripts/Json_Tables/mod_table.parquet"
+Color_table="Umiscripts/Json_Tables/color_table.parquet"
+
 
 
 ###Component paths

@@ -1,9 +1,7 @@
 #Additional Tables
 
 #testing json to pandas
-import json
 import pandas as pd
-import glob
 from Paths import *
 from ExtraFunctions import *
 
